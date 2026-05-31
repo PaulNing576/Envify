@@ -1,0 +1,205 @@
+{
+  "name": "envify",
+  "displayName": "Envify - Secret Scanner",
+  "description": "Prevent accidental API key leaks — real-time secret detection with one-click fixes for VS Code",
+  "version": "0.1.0",
+  "publisher": "envify",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Linters",
+    "Other"
+  ],
+  "keywords": [
+    "secrets",
+    "api-key",
+    "security",
+    "openai",
+    "env",
+    "environment-variables",
+    "secret-scanning"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/envify/vscode-envify"
+  },
+  "bugs": {
+    "url": "https://github.com/envify/vscode-envify/issues"
+  },
+  "icon": "resources/icon.png",
+  "activationEvents": [
+    "onStartupFinished",
+    "onLanguage:python",
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:typescriptreact",
+    "onLanguage:javascriptreact"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "envify.scanWorkspace",
+        "title": "Envify: Scan Entire Workspace"
+      },
+      {
+        "command": "envify.fixAllSecrets",
+        "title": "Envify: Fix All Secrets"
+      },
+      {
+        "command": "envify.generateEnvFile",
+        "title": "Envify: Generate .env File"
+      },
+      {
+        "command": "envify.ignoreSecret",
+        "title": "Envify: Ignore This Secret"
+      },
+      {
+        "command": "envify.quickMenu",
+        "title": "Envify: Quick Actions",
+        "icon": "$(shield)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "envify.quickMenu",
+          "when": "resourceScheme == file",
+          "group": "navigation",
+          "alt": "envify.scanWorkspace"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Envify",
+      "properties": {
+        "envify.language": {
+          "order": 1,
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "zh-cn", "en"],
+          "enumDescriptions": [
+            "跟随 VS Code 界面语言",
+            "Chinese (Simplified)",
+            "English"
+          ],
+          "markdownDescription": "Envify 界面显示语言 / Display language for Envify UI.\n\n- `auto`: 跟随 VS Code 界面语言\n- `zh-cn`: 简体中文\n- `en`: English"
+        },
+        "envify.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable real-time secret scanning"
+        },
+        "envify.providers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "openai",
+            "anthropic",
+            "gemini",
+            "deepseek",
+            "openrouter",
+            "groq",
+            "togetherai",
+            "replicate",
+            "pinecone",
+            "supabase",
+            "aws",
+            "github",
+            "stripe",
+            "slack",
+            "sendgrid",
+            "azure"
+          ],
+          "description": "API providers to scan for"
+        },
+        "envify.entropyThreshold": {
+          "type": "number",
+          "default": 4.0,
+          "minimum": 3,
+          "maximum": 6,
+          "description": "Shannon entropy threshold (bits/char) for unknown-key detection. Higher = fewer false positives."
+        },
+        "envify.customPatterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Human-readable name for this provider"
+              },
+              "regex": {
+                "type": "string",
+                "description": "Regular expression pattern to match"
+              },
+              "envVarName": {
+                "type": "string",
+                "description": "Suggested environment variable name"
+              }
+            }
+          },
+          "default": [],
+          "description": "Custom regex patterns for additional secret types"
+        },
+        "envify.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/dist/**",
+            "**/build/**",
+            "**/__pycache__/**",
+            "**/.venv/**",
+            "**/venv/**"
+          ],
+          "description": "Glob patterns to exclude from scanning"
+        },
+        "envify.largeFileThreshold": {
+          "type": "number",
+          "default": 5000,
+          "description": "Files with more lines than this will use regex-only scan to avoid performance issues"
+        },
+        "envify.autoFixOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically apply Quick Fix on save (use with caution)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "test": "jest",
+    "test:integration": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "build:wasm": "bash scripts/build-wasm.sh"
+  },
+  "dependencies": {
+    "web-tree-sitter": "^0.24.6"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vscode/test-electron": "^2.3.0",
+    "@vscode/vsce": "^2.26.0",
+    "eslint": "^8.56.0",
+    "jest": "^30.4.2",
+    "tree-sitter-cli": "^0.24.6",
+    "ts-jest": "^29.4.11",
+    "typescript": "^5.3.0"
+  }
+}
