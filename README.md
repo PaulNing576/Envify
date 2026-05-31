@@ -1,119 +1,204 @@
-# Envify — Secret Scanner for VS Code
+# Envify
 
-Prevent accidental API key leaks before they reach GitHub. Envify scans your code in real-time, detects hardcoded secrets (OpenAI, Anthropic, Gemini, DeepSeek keys and more), and offers one-click fixes to replace them with environment variables.
+**Find and Fix Hardcoded API Keys Automatically**
+
+A VS Code extension that detects exposed secrets and automatically migrates them to environment variables.
+
+![Logo](assets/Logo.png)
+
+---
+
+## 🎬 Demo
+
+### Scan Entire Workspace & Fix All
+
+![Workspace Scan](assets/Demo1.GIF)
+
+Envify scans your entire workspace, detects exposed secrets, and fixes them automatically.
+
+---
+
+### Quick Fix in Action
+
+![Quick Fix](assets/Demo2.GIF)
+
+Detect a hardcoded API key, press Quick Fix, and Envify will:
+
+- Replace the secret with an environment variable
+- Generate a `.env` file
+- Update `.gitignore`
+- Keep your code syntax valid
+
+---
 
 ## Features
 
-- **Real-time scanning** — Detects secrets as you type in Python, JavaScript, TypeScript, JSX, and TSX files
-- **Smart detection** — Uses AST parsing (tree-sitter) for precise detection with low false positives
-- **Provider coverage** — Built-in patterns for OpenAI, Anthropic, Gemini, and DeepSeek
-- **Entropy analysis** — Detects unknown high-entropy strings assigned to suspicious variable names
-- **One-click Quick Fix** — Replace hardcoded keys with `os.getenv()` or `process.env` with Ctrl+.
-- **Automatic .env generation** — Creates or updates your `.env` file with the detected value
-- **.gitignore management** — Ensures `.env` is listed in `.gitignore`
-- **Custom patterns** — Add your own regex patterns for additional secret types
+### Secret Detection
 
-## Quick Start
+Detect hardcoded secrets in real time.
 
-1. Install the extension from the [VS Code Marketplace](https://marketplace.visualstudio.com/)
-2. Open a Python or JavaScript file
-3. Type `api_key = "sk-proj-..."` — a warning squiggly appears
-4. Press `Ctrl+.` (or `Cmd+.` on Mac) and select **"Replace with environment variable"**
-5. The key is replaced with `os.getenv("OPENAI_API_KEY")`, `.env` is updated, and `.gitignore` is checked
+Supported providers:
 
-## Configuration
+- OpenAI
+- Anthropic
+- Groq
+- OpenRouter
+- DeepSeek
+- Gemini
 
-```json
-{
-  "envify.enabled": true,
-  "envify.providers": ["openai", "anthropic", "gemini", "deepseek"],
-  "envify.entropyThreshold": 4.5,
-  "envify.customPatterns": [],
-  "envify.excludePatterns": [
-    "**/node_modules/**",
-    "**/.git/**",
-    "**/dist/**"
-  ],
-  "envify.largeFileThreshold": 5000,
-  "envify.autoFixOnSave": false
-}
+Plus high-entropy secret detection for unknown providers.
+
+---
+
+### One-Click Quick Fix
+
+Convert:
+
+```python
+api_key = "sk-proj-xxxxxxxx"
 ```
 
-### Custom Patterns
+into:
 
-Add your own secret patterns in VS Code settings:
+```python
+import os
 
-```json
-{
-  "envify.customPatterns": [
-    {
-      "name": "MyService",
-      "regex": "^ms-[A-Za-z0-9]{32}$",
-      "envVarName": "MYSERVICE_API_KEY"
-    }
-  ]
-}
+api_key = os.getenv("OPENAI_API_KEY")
 ```
 
-## Supported Providers
+Automatically.
 
-| Provider | Key Pattern | Env Var |
-|---|---|---|
-| OpenAI | `sk-proj-...`, `sk-svcacct-...`, `sk-admin-...`, `sk-...` | `OPENAI_API_KEY` |
-| Anthropic | `sk-ant-api03-...` | `ANTHROPIC_API_KEY` |
-| Google Gemini | `AIzaSy...` | `GEMINI_API_KEY` |
-| DeepSeek | `sk-[a-f0-9]{32}` | `DEEPSEEK_API_KEY` |
+---
+
+### Workspace Scan
+
+Scan your entire project with a single click.
+
+View:
+
+- File path
+- Secret type
+- Line number
+- Suggested environment variable
+
+from a centralized dashboard.
+
+---
+
+### Fix All Secrets
+
+Fix every detected secret across the workspace.
+
+Automatically:
+
+- Generate `.env`
+- Update `.gitignore`
+- Replace hardcoded values
+- Preserve valid syntax
+
+---
+
+### Toolbar Integration
+
+Launch scans directly from the VS Code toolbar.
+
+No command palette required.
+
+---
+
+## Installation
+
+### From VS Code Marketplace
+
+Search for:
+
+```
+Envify
+```
+
+and click Install.
+
+---
+
+## Usage
+
+### Scan Current File
+
+Open a source file containing secrets.
+
+Envify will automatically highlight detected secrets.
+
+### Quick Fix
+
+Place your cursor on a detected secret.
+
+Press:
+
+```
+Cmd + .
+```
+
+Choose:
+
+```
+Replace with Environment Variable
+```
+
+Envify will handle the rest.
+
+### Scan Entire Workspace
+
+Click the Envify toolbar button.
+
+Or run:
+
+```
+Envify: Scan Entire Workspace
+```
+
+from the command palette.
+
+---
 
 ## Supported Languages
 
 - Python
 - JavaScript
 - TypeScript
-- JSX / TSX (React)
+- React TSX
 
-## Commands
+More languages coming soon.
 
-- **Envify: Scan Workspace for Secrets** — Manually scan all open files
-- **Envify: Generate .env File** — Create a `.env` file in the workspace root
-- **Envify: Ignore This Secret** — Add a suppression comment on the current line
+---
 
-## Suppressing False Positives
+## Why Envify?
 
-Add a comment on the line before the detected secret:
+Most secret scanners stop at detection.
 
-```python
-# envify:ignore-next-line
-example_key = "sk-this-is-just-an-example"
-```
+Envify goes one step further.
 
-## Development
+Instead of telling you that a secret exists, it helps you fix the problem automatically.
 
-```bash
-# Install dependencies
-npm install
+---
 
-# Build tree-sitter WASM grammars (requires tree-sitter CLI)
-npm run build:wasm
+## Roadmap
 
-# Compile TypeScript
-npm run compile
+- [x] Secret Detection
+- [x] Quick Fix
+- [x] Automatic .env Generation
+- [x] Automatic .gitignore Updates
+- [x] Workspace Scan
+- [x] Fix All Secrets
+- [ ] More Providers
+- [ ] Git Commit Protection
+- [ ] CI/CD Integration
 
-# Watch mode
-npm run watch
-
-# Run unit tests
-npm test
-
-# Package for distribution
-npm run package
-```
-
-## Architecture
-
-- **AST Parsing**: [web-tree-sitter](https://github.com/tree-sitter/tree-sitter) for precise code structure analysis
-- **Pattern Matching**: Regex patterns for known providers + Shannon entropy for unknown keys
-- **Quick Fix**: VS Code CodeActionProvider with atomic WorkspaceEdits
+---
 
 ## License
 
-MIT
+MIT License
+
+---
+
+Built originally by Boyuan (Paul) Ning.
