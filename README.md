@@ -4,8 +4,6 @@
 
 A VS Code extension that detects exposed secrets and automatically migrates them to environment variables.
 
-![Logo](assets/Logo.png)
-
 ---
 
 ## 🎬 Demo
