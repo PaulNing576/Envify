@@ -1,9 +1,9 @@
 {
-  "name": "envify",
-  "displayName": "Envify - Secret Scanner",
+  "name": "envify-secret-scanner",
+  "displayName": "Envify: Secret Scanner to prevent API key leaks",
   "description": "Prevent accidental API key leaks — real-time secret detection with one-click fixes for VS Code",
   "version": "0.1.0",
-  "publisher": "envify",
+  "publisher": "paulning576",
   "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
@@ -23,10 +23,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/envify/vscode-envify"
+    "url": "https://github.com/paulning576/Envify"
   },
   "bugs": {
-    "url": "https://github.com/envify/vscode-envify/issues"
+    "url": "https://github.com/paulning576/Envify/issues"
   },
   "icon": "assets/Logo.png",
   "activationEvents": [
