@@ -28,7 +28,7 @@
   "bugs": {
     "url": "https://github.com/envify/vscode-envify/issues"
   },
-  "icon": "resources/icon.png",
+  "icon": "assets/Logo.png",
   "activationEvents": [
     "onStartupFinished",
     "onLanguage:python",
@@ -79,7 +79,11 @@
           "order": 1,
           "type": "string",
           "default": "auto",
-          "enum": ["auto", "zh-cn", "en"],
+          "enum": [
+            "auto",
+            "zh-cn",
+            "en"
+          ],
           "enumDescriptions": [
             "跟随 VS Code 界面语言",
             "Chinese (Simplified)",
@@ -119,7 +123,7 @@
         },
         "envify.entropyThreshold": {
           "type": "number",
-          "default": 4.0,
+          "default": 4,
           "minimum": 3,
           "maximum": 6,
           "description": "Shannon entropy threshold (bits/char) for unknown-key detection. Higher = fewer false positives."
@@ -195,7 +199,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "@vscode/test-electron": "^2.3.0",
-    "@vscode/vsce": "^2.26.0",
+    "@vscode/vsce": "^2.32.0",
     "eslint": "^8.56.0",
     "jest": "^30.4.2",
     "tree-sitter-cli": "^0.24.6",
