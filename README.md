@@ -10,7 +10,7 @@ A VS Code extension that detects exposed secrets and automatically migrates them
 
 ### Scan Entire Workspace & Fix All
 
-![Workspace Scan](assets/Demo1.gif)
+![Workspace Scan](assets/demo-scan.gif)
 
 Envify scans your entire workspace, detects exposed secrets, and fixes them automatically.
 
@@ -18,7 +18,7 @@ Envify scans your entire workspace, detects exposed secrets, and fixes them auto
 
 ### Quick Fix in Action
 
-![Quick Fix](assets/Demo2.gif)
+![Quick Fix](assets/demo-fix.gif)
 
 Detect a hardcoded API key, press Quick Fix, and Envify will:
 
