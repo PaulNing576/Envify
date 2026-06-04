@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { WorkspaceScanResult, FileDetection } from '../scanner/workspaceScanner';
 import { SecretDetection } from '../patterns/provider';
-import { getEnvVarExpression, getImportOsEdit } from '../codeActions/replaceWithEnvVar';
+import { getImportOsEdit, getSmartFixEdits } from '../codeActions/replaceWithEnvVar';
 import { EnvFileGenerator } from '../codeActions/envFileGenerator';
 import { GitignoreChecker } from '../codeActions/gitignoreChecker';
 
@@ -75,20 +75,19 @@ export class FixAllService {
     processedEnvVars: Set<string>
   ): number {
     let count = 0;
-    const langId = document.languageId;
 
     for (const secret of fileDet.secrets) {
       const envVarName = secret.provider.envVarName;
-      const diagnosticRange = new vscode.Range(
-        secret.range.startLine,
-        secret.range.startChar,
-        secret.range.endLine,
-        secret.range.endChar
-      );
 
-      // 替换为环境变量读取表达式
-      const replacement = getEnvVarExpression(langId, envVarName);
-      edit.replace(document.uri, diagnosticRange, replacement);
+      // 智能替换：检测 secret 是否已是 os.getenv() 的默认值 或 process.env 的后备值
+      const smartFix = getSmartFixEdits(document, secret, envVarName);
+      for (const textEdit of smartFix.edits) {
+        if (textEdit.newText.length === 0) {
+          edit.delete(document.uri, textEdit.range);
+        } else {
+          edit.replace(document.uri, textEdit.range, textEdit.newText);
+        }
+      }
 
       // 记录需要写入 .env 的变量（去重用）
       processedEnvVars.add(envVarName);

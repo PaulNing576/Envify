@@ -11,8 +11,12 @@ export function getScanConfig(): ScanConfig {
   const config = vscode.workspace.getConfiguration('envify');
 
   return {
-    enabledProviders: config.get<string[]>('providers', ['openai']),
-    entropyThreshold: config.get<number>('entropyThreshold', 4.5),
+    enabledProviders: config.get<string[]>('providers', [
+      'openai', 'anthropic', 'gemini', 'deepseek', 'openrouter',
+      'groq', 'togetherai', 'replicate', 'pinecone', 'supabase',
+      'aws', 'github', 'stripe', 'slack', 'sendgrid', 'azure',
+    ]),
+    entropyThreshold: config.get<number>('entropyThreshold', 4),
     excludePatterns: config.get<string[]>('excludePatterns', [
       '**/node_modules/**',
       '**/.git/**',

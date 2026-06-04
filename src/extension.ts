@@ -336,6 +336,12 @@ function updateStatusBarFromResult(result: WorkspaceScanResult): void {
 function syncCustomPatterns(): void {
   const config = vscode.workspace.getConfiguration('envify');
   const customPatterns = config.get<any[]>('customPatterns', []);
+  // 防御：万一配置返回了非数组值（例如用户手动编辑 settings.json 写错了类型）
+  if (!Array.isArray(customPatterns)) {
+    console.warn('[Envify] customPatterns 配置不是数组，已忽略');
+    patternRegistry.setCustomProviders([]);
+    return;
+  }
   const customProviders: ApiProvider[] = customPatterns.map((p, i) => {
     let regex: RegExp;
     try {

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { SecretDetection } from '../patterns/provider';
-import { getEnvVarExpression, getImportOsEdit } from './replaceWithEnvVar';
+import { getEnvVarExpression, getImportOsEdit, getSmartFixEdits } from './replaceWithEnvVar';
 import { EnvFileGenerator } from './envFileGenerator';
 import { GitignoreChecker } from './gitignoreChecker';
 import { t } from '../i18n';
@@ -59,10 +59,8 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
         true   // include .gitignore
       );
       fullFix.edit = workspaceEdit;
-      fullFix.command = {
-        command: 'envify.scanWorkspace',
-        title: t('quickfix.rescan'),
-      };
+      // 不再附加 envify.scanWorkspace 命令，避免每次 Quick Fix 后自动弹出 Dashboard。
+      // 文档变更会触发 onDidChangeTextDocument → debounced re-scan → diagnostics 自动更新。
 
       actions.push(fullFix);
 
@@ -108,19 +106,26 @@ export class QuickFixProvider implements vscode.CodeActionProvider {
     console.log('[Envify] buildWorkspaceEdit: workspaceFolder =', workspaceFolder?.uri.fsPath ?? 'undefined');
     console.log('[Envify] buildWorkspaceEdit: includeEnv =', includeEnv, ', includeGitignore =', includeGitignore);
 
-    // 1. 替换字符串字面量为环境变量读取表达式
-    const diagnosticRange = new vscode.Range(
-      detection.range.startLine,
-      detection.range.startChar,
-      detection.range.endLine,
-      detection.range.endChar
+    // 1. 智能替换：检测 secret 是否已是 os.getenv() 的默认值 或 process.env 的后备值
+    const smartFix = getSmartFixEdits(document, detection, envVarName);
+    for (const textEdit of smartFix.edits) {
+      // TextEdit.delete → newText is "" → use WorkspaceEdit.delete
+      // TextEdit.replace → newText is non-empty → use WorkspaceEdit.replace
+      if (textEdit.newText.length === 0) {
+        edit.delete(document.uri, textEdit.range);
+      } else {
+        edit.replace(document.uri, textEdit.range, textEdit.newText);
+      }
+    }
+    console.log(
+      '[Envify] buildWorkspaceEdit: added code replacement for',
+      document.uri.fsPath,
+      smartFix.wasDefaultValue ? '(was default value — removed instead of wrapping)' : ''
     );
 
-    const replacement = getEnvVarExpression(document.languageId, envVarName);
-    edit.replace(document.uri, diagnosticRange, replacement);
-    console.log('[Envify] buildWorkspaceEdit: added code replacement for', document.uri.fsPath);
-
     // 2. 为 Python 文件添加 import os（如果缺失）
+    //    注意：如果 secret 已是 os.getenv(default) 且删除了默认值，
+    //    则 os 模块可能已经 import — getImportOsEdit 会正确处理
     const importEdit = getImportOsEdit(document);
     if (importEdit) {
       edit.insert(document.uri, importEdit.range.start, importEdit.newText);

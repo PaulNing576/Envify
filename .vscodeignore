@@ -11,3 +11,4 @@ out/**
 !out/**/*.js
 !out/**/*.wasm
 resources/wasm/*.wasm
+ENVIFY_INTERVIEW_GUIDE.md
